@@ -2,6 +2,7 @@ package safeguard_test
 
 import (
 	"errors"
+	"fmt"
 	"testing"
 
 	"github.com/safeblock-dev/safeguard"
@@ -12,38 +13,34 @@ import (
 func TestCatch(t *testing.T) {
 	t.Parallel()
 
-	t.Run("NoErrorNoPanic", func(t *testing.T) {
+	const expectedPanic = "example panic"
+	expectedErr := errors.New("example error")
+
+	t.Run("no error and no panic", func(t *testing.T) {
 		t.Parallel()
 		var called bool
-		safeguard.Catch(func() error {
-			return nil
-		}, func(_ error) {
+		safeguard.Catch(nil, func(_ error) {
 			called = true
 		})
 		require.False(t, called, "handler should not be called if no error or panic occurs")
 	})
 
-	t.Run("WithError", func(t *testing.T) {
+	t.Run("with error", func(t *testing.T) {
 		t.Parallel()
-		expectedErr := errors.New("example error")
+
 		var capturedErr error
-		safeguard.Catch(func() error {
-			return expectedErr
-		}, func(err error) {
+		safeguard.Catch(expectedErr, func(err error) {
 			capturedErr = err
 		})
-		require.Equal(t, expectedErr, capturedErr, "handler should capture the returned error")
+		require.Equal(t, expectedErr, capturedErr, "handler should capture the provided error")
 	})
 
-	t.Run("WithPanic", func(t *testing.T) {
+	t.Run("with panic", func(t *testing.T) {
 		t.Parallel()
-		expectedPanic := "example panic"
+
 		var capturedErr error
 		func() {
-			var err error
-			defer safeguard.Catch(func() error {
-				return err
-			}, func(err error) {
+			defer safeguard.Catch(nil, func(err error) {
 				capturedErr = err
 			})
 
@@ -53,13 +50,11 @@ func TestCatch(t *testing.T) {
 		require.Contains(t, capturedErr.Error(), expectedPanic, "handler should capture the panic message")
 	})
 
-	t.Run("MultipleHandlers", func(t *testing.T) {
+	t.Run("multiple options", func(t *testing.T) {
 		t.Parallel()
-		expectedErr := errors.New("example error")
+
 		var capturedErr1, capturedErr2 error
-		safeguard.Catch(func() error {
-			return expectedErr
-		}, func(err error) {
+		safeguard.Catch(expectedErr, func(err error) {
 			capturedErr1 = err
 		}, func(err error) {
 			capturedErr2 = err
@@ -68,38 +63,38 @@ func TestCatch(t *testing.T) {
 		require.Equal(t, expectedErr, capturedErr2, "second handler should capture the error")
 	})
 
-	t.Run("WithPanicAndError", func(t *testing.T) {
+	t.Run("with panic and error", func(t *testing.T) {
 		t.Parallel()
-		expectedErr := errors.New("example error")
-		expectedPanic := "example panic"
+
 		var capturedErrs []error
-		safeguard.Catch(func() error {
-			return expectedErr
-		}, func(...error) {
-			capturedErrs = append(capturedErrs, expectedErr)
-		}, func(...error) {
-			capturedErrs = append(capturedErrs, werr.PanicToError(expectedPanic))
-		})
+		func() {
+			defer safeguard.Catch(expectedErr, func(err error) {
+				capturedErrs = append(capturedErrs, err)
+			})
+
+			panic(expectedPanic)
+		}()
 		require.Len(t, capturedErrs, 2)
-		require.Equal(t, expectedErr, capturedErrs[0], "handler should capture the returned error")
-		require.Contains(t, capturedErrs[1].Error(), expectedPanic, "handler should capture the panic message")
+		require.Equal(t, expectedErr, capturedErrs[0])
+		require.Contains(t, capturedErrs[1].Error(), expectedPanic)
 	})
 
-	t.Run("SkipSpecificError", func(t *testing.T) {
+	t.Run("second error", func(t *testing.T) {
 		t.Parallel()
-		specificErr := errors.New("skip error")
-		otherErr := errors.New("other error")
+
+		expected2Err := errors.New("example error 2")
+		expected3Err := errors.New("example error 3")
 		var capturedErrs []error
-		safeguard.Catch(func() error {
-			return otherErr
-		}, specificErr, func(...error) {
-			capturedErrs = append(capturedErrs, otherErr)
+		safeguard.Catch(expectedErr, expected2Err, expected3Err, func(err error) {
+			capturedErrs = append(capturedErrs, err)
 		})
-		require.Len(t, capturedErrs, 1)
-		require.Equal(t, otherErr, capturedErrs[0], "handler should capture the other error")
+		require.Len(t, capturedErrs, 3)
+		require.Equal(t, expectedErr, capturedErrs[0])
+		require.Equal(t, expected2Err, capturedErrs[1])
+		require.Equal(t, expected3Err, capturedErrs[2])
 	})
 
-	t.Run("HandleSliceErrorHandler", func(t *testing.T) {
+	t.Run("handle slice error handler", func(t *testing.T) {
 		t.Parallel()
 		expectedErrs := []error{
 			errors.New("error 1"),
@@ -108,29 +103,73 @@ func TestCatch(t *testing.T) {
 
 		var called bool
 		func() {
-			var err error
-			defer safeguard.Catch(func() error {
-				return err
-			}, func(errs []error) {
+			defer safeguard.Catch(expectedErrs[0], func(errs []error) {
 				called = true
 				require.Equal(t, expectedErrs[0], werr.Cause(errs[0]))
 				require.Equal(t, expectedErrs[1], werr.Cause(errs[1]))
 			})
 
-			err = expectedErrs[0]
 			panic(expectedErrs[1])
 		}()
 
 		require.True(t, called)
 	})
 
-	t.Run("UnsupportedOptionType", func(t *testing.T) {
+	t.Run("unsupported option type", func(t *testing.T) {
 		t.Parallel()
 
 		require.Panics(t, func() {
-			safeguard.Catch(func() error {
-				return nil
-			}, 123) // Passing unsupported option type (int)
+			safeguard.Catch(nil, 123) // Passing unsupported option type (int)
 		}, "safeguard: unsupported option type provided")
+	})
+
+	t.Run("when skip error", func(t *testing.T) {
+		t.Parallel()
+
+		expected2Err := errors.New("example error 2")
+		skippedErr := fmt.Errorf("example error 3") //nolint: perfsprint
+		var capturedErrs []error
+		safeguard.Catch(expectedErr, expected2Err, skippedErr,
+			safeguard.SkipErr(skippedErr),
+			func(err error) { capturedErrs = append(capturedErrs, err) },
+		)
+		require.Len(t, capturedErrs, 2)
+		require.Equal(t, expectedErr, capturedErrs[0])
+		require.Equal(t, expected2Err, capturedErrs[1])
+	})
+}
+
+func TestCatchFn(t *testing.T) {
+	t.Parallel()
+
+	const expectedPanic = "example panic"
+
+	t.Run("no error and no panic", func(t *testing.T) {
+		t.Parallel()
+		var called bool
+		safeguard.CatchFn(func() error {
+			return nil
+		}, func(_ error) {
+			called = true
+		})
+		require.False(t, called, "handler should not be called if no error or panic occurs")
+	})
+
+	t.Run("with panic", func(t *testing.T) {
+		t.Parallel()
+
+		var capturedErr error
+		func() {
+			var err error
+			defer safeguard.CatchFn(func() error {
+				return err
+			}, func(err error) {
+				capturedErr = err
+			})
+
+			panic(expectedPanic)
+		}()
+		require.Error(t, capturedErr)
+		require.Contains(t, capturedErr.Error(), expectedPanic, "handler should capture the panic message")
 	})
 }

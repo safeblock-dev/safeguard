@@ -1,21 +1,39 @@
 package main
 
 import (
+	"context"
 	"errors"
+	"log"
+	"os"
+	"syscall"
+	"time"
 
-	"github.com/matchsystems/werr"
 	"github.com/safeblock-dev/safeguard"
+	"github.com/safeblock-dev/wr/taskgroup"
 )
 
 func main() {
+	ctx := context.Background()
+
 	var err error
-	defer safeguard.Catch(func() error {
-		return err
-	}, safeguard.Report)
+	defer func() {
+		safeguard.Catch(err,
+			safeguard.SkipErr(taskgroup.ErrSignal),
+			safeguard.ReportAndExit,
+		)
+	}()
 
-	err = errors.New("example error")
-	err = werr.Wrapf(err, "wrap error 1")
-	err = werr.Wrapf(err, "wrap error 2")
+	tasks := taskgroup.New()
+	tasks.Add(taskgroup.SignalHandler(ctx, os.Interrupt, syscall.SIGINT, syscall.SIGTERM))
+	tasks.AddContext(func(ctx context.Context) error {
+		select {
+		case <-ctx.Done():
+			return nil
+		case <-time.NewTimer(5 * time.Second).C:
+			return errors.New("example fail")
+		}
+	}, taskgroup.SkipInterruptCtx())
 
-	panic("example panic")
+	log.Println("press CTR + C")
+	err = tasks.Run()
 }

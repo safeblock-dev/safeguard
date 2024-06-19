@@ -9,4 +9,7 @@ require (
 	github.com/safeblock-dev/safeguard v0.0.2
 )
 
-require github.com/safeblock-dev/werr v0.0.7 // indirect
+require (
+	github.com/safeblock-dev/werr v0.0.7 // indirect
+	github.com/safeblock-dev/wr v0.0.10 // indirect
+)

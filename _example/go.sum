@@ -6,6 +6,8 @@ github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZb
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/safeblock-dev/werr v0.0.7 h1:m30XfjBJKJ6UzJB0FvYV2SV+IJRg8ZHOWH9JdEycl8E=
 github.com/safeblock-dev/werr v0.0.7/go.mod h1:uQSi+0T80+t28EBczRlx28nLvCbZYM3uJW6OWBUmoT0=
+github.com/safeblock-dev/wr v0.0.10 h1:HXylwR0YZkTHvqGHCB6WS66NdMS0XrEC1y5VD578xAk=
+github.com/safeblock-dev/wr v0.0.10/go.mod h1:boZABuKbniUPfrmSqB6LYxIhGiaSptueOOnVfqsAuNQ=
 github.com/stretchr/testify v1.8.4 h1:CcVxjf3Q8PM0mHUKJCdn+eZZtm5yQwehR5yeSVQQcUk=
 github.com/stretchr/testify v1.8.4/go.mod h1:sz/lmYIOXD/1dqDmKjjqLyZ2RngseejIcXlSw2iwfAo=
 gopkg.in/yaml.v3 v3.0.1 h1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=
