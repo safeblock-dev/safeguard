@@ -31,6 +31,7 @@ func Catch(exception error, options ...any) {
 // CatchFn captures and handles errors and panics that occur during the execution of the provided function.
 // The second parameter 'options' allows for passing error handlers and specific errors to be ignored.
 // Supported types for 'options' include:
+// - func(): a simple handler
 // - func(error): a handler for single errors
 // - func(...error): a handler for multiple errors
 // - func([]error): a handler for a slice of errors
@@ -51,6 +52,8 @@ func CollectErrors(errs ...error) []error {
 func processOptions(errs []error, options ...any) {
 	for _, opt := range options {
 		switch x := opt.(type) {
+		case func():
+			x()
 		case func(error):
 			for _, err := range errs {
 				x(err)

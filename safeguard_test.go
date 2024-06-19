@@ -115,6 +115,16 @@ func TestCatch(t *testing.T) {
 		require.True(t, called)
 	})
 
+	t.Run("when simple func option", func(t *testing.T) {
+		t.Parallel()
+
+		var called bool
+		safeguard.Catch(expectedErr, func() {
+			called = true
+		})
+		require.True(t, called)
+	})
+
 	t.Run("unsupported option type", func(t *testing.T) {
 		t.Parallel()
 
