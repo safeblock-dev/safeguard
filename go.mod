@@ -3,8 +3,8 @@ module github.com/safeblock-dev/safeguard
 go 1.22.0
 
 require (
-	github.com/safeblock-dev/werr v0.0.7
-	github.com/stretchr/testify v1.8.4
+	github.com/safeblock-dev/werr v0.0.8
+	github.com/stretchr/testify v1.9.0
 )
 
 require (

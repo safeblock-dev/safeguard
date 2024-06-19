@@ -1,5 +1,6 @@
 .DEFAULT_GOAL := help
 
+# Go
 GO_BIN ?= $(shell go env GOPATH)/bin
 
 .PHONY: help
@@ -25,8 +26,9 @@ bench: ## Run benchmarks. See https://pkg.go.dev/cmd/go#hdr-Testing_flags
 
 .PHONY: update
 update: ## Update packages
-	@find . -name "go.mod" -execdir sh -c 'echo "Updating $$(pwd)"; go get -u ./... && go mod tidy' \;
+	@find . -name "go.mod" -execdir sh -c 'echo "Updating $$(pwd)"; go get -u all && go mod tidy' \;
 
-clear: ## Remove object files and cached files
-	@printf "Clearing golangci-lint cache...\n"
-	@golangci-lint cache clean
+.PHONY: generate
+generate: generate-go## Generate Go files.
+generate-go: $(GO_FILES) ## Generate Go files
+	go generate ./...
