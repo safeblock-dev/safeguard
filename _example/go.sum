@@ -1,7 +1,5 @@
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/matchsystems/werr v0.1.3 h1:h932fzdGLE67w5O8F3O2vO49KkjmSeqsFQqDFkIOMYM=
-github.com/matchsystems/werr v0.1.3/go.mod h1:MpZemBWOQ0IuQogwr5aCjNnIfWe+iEfnSh7nTGQ3M7I=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/safeblock-dev/werr v0.0.8 h1:Z+bYf/CrbbaIZGjv+HnmAiBjdChjIIF1/O07dXL0rnM=

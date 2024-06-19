@@ -3,8 +3,8 @@ package main
 import (
 	"errors"
 
-	"github.com/matchsystems/werr"
 	"github.com/safeblock-dev/safeguard"
+	"github.com/safeblock-dev/werr"
 )
 
 func main() {
