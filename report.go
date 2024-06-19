@@ -2,7 +2,6 @@ package safeguard
 
 import (
 	"fmt"
-	"os"
 	"strings"
 )
 
@@ -12,11 +11,9 @@ const (
 	colorGreen = "\033[32m" // ANSI escape code for green text
 )
 
-// ReportAndExit prints error reports with color-coded formatting and exits the program.
-// If no errors are provided, it prints a success message and exits with code 0.
-// If errors are provided, it prints each error with a formatted title and exits with code 1.
+// Report prints error reports with color-coded formatting.
 // nolint: forbidigo
-func ReportAndExit(errs ...error) {
+func Report(errs ...error) {
 	const (
 		fTitle = colorRed + "[---------- FAIL[%d] ----------]" + colorReset
 		fEnd   = fTitle
@@ -24,7 +21,6 @@ func ReportAndExit(errs ...error) {
 	)
 	if len(errs) == 0 {
 		fmt.Println(sTitle) // Print success message
-		os.Exit(0)          // Exit with success code
 	}
 
 	// Print each error with formatted title and exit with error code
@@ -33,8 +29,15 @@ func ReportAndExit(errs ...error) {
 			fmt.Sprintf(fTitle, i), printStackTrace(err), fmt.Sprintf(fEnd, i),
 		)
 	}
+}
 
-	os.Exit(1) // Exit with error code
+// ReportAndExit prints error reports with color-coded formatting and exits the program.
+// If no errors are provided, it prints a success message and exits with code 0.
+// If errors are provided, it prints each error with a formatted title and exits with code 1.
+// nolint: forbidigo
+func ReportAndExit(errs ...error) {
+	Report(errs...)
+	Exit(errs...) // Exit with error code
 }
 
 // printStackTrace formats an error's stack trace for printing purposes.
