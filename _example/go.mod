@@ -7,9 +7,7 @@ replace github.com/safeblock-dev/safeguard => ./..
 require (
 	github.com/matchsystems/werr v0.1.3
 	github.com/safeblock-dev/safeguard v0.0.2
+	github.com/safeblock-dev/wr v0.0.10
 )
 
-require (
-	github.com/safeblock-dev/werr v0.0.7 // indirect
-	github.com/safeblock-dev/wr v0.0.10 // indirect
-)
+require github.com/safeblock-dev/werr v0.0.7 // indirect
