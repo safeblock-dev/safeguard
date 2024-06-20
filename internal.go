@@ -13,7 +13,7 @@ type skipErr struct {
 
 // FilterSkipErrors filters out specific errors from the error list, including joined errors.
 func filterSkipErrors(errs []error, skip error) []error {
-	var filtered []error
+	filtered := make([]error, 0, len(errs))
 	for _, err := range errs {
 		// Check if the error is a joined error
 		var joinedErr interface{ Unwrap() []error }
@@ -47,7 +47,7 @@ func processOptions(errs []error, options ...any) {
 		case func([]error):
 			x(errs)
 		case skipErr:
-			errs = filterSkipErrors(errs, x)
+			errs = filterSkipErrors(errs, x.error)
 		case error:
 			errs = append(errs, x)
 		default:
