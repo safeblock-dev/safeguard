@@ -63,7 +63,7 @@ func processOptions(errs []error, options ...any) {
 		case func([]error):
 			x(errs)
 		case skipErr:
-			errs = filterErrors(errs, x)
+			errs = FilterSkipErrors(errs, x)
 		case error:
 			errs = append(errs, x)
 		default:
@@ -72,11 +72,21 @@ func processOptions(errs []error, options ...any) {
 	}
 }
 
-// filterErrors filters out specific errors from the error list.
-func filterErrors(errs []error, specificErr skipErr) []error {
+// FilterSkipErrors filters out skip specific errors from the error list.
+func FilterSkipErrors(errs []error, skip skipErr) []error {
 	var filtered []error
 	for _, err := range errs {
-		if !errors.Is(err, specificErr.error) {
+		//TODO: not working for wrapped errors.Join() error.
+		joined, ok := errors.Unwrap(err).(interface{ Unwrap() []error })
+		switch {
+		case ok:
+			subs := joined.Unwrap()
+			for _, sub := range subs {
+				if !errors.Is(sub, skip) {
+					filtered = append(filtered, sub)
+				}
+			}
+		case !errors.Is(err, skip):
 			filtered = append(filtered, err)
 		}
 	}
