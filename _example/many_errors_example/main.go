@@ -15,7 +15,7 @@ func main() {
 
 	defer func() {
 		safeguard.Catch(
-			err, err2, err3,
+			func() error { return err }, err2, err3,
 			safeguard.SkipErr(taskgroup.ErrSignal),
 			safeguard.ReportAndExit,
 		)

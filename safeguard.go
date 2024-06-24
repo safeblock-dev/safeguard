@@ -6,30 +6,15 @@ import (
 	"github.com/safeblock-dev/werr"
 )
 
-// Catch captures and handles errors and panics that occur during the execution of the provided error.
+// Catch captures and handles errors and panics that occur during the execution of the provided function.
 // The second parameter 'options' allows for passing error handlers and specific errors to be ignored.
 // Supported types for 'options' include:
 // - func(error): a handler for single errors
 // - func(...error): a handler for multiple errors
 // - func([]error): a handler for a slice of errors
 // - error: specific errors to be ignored.
-func Catch(exception error, options ...any) {
-	errs := CollectErrors(exception, werr.PanicToError(recover()))
-
-	// Process each option
-	processOptions(errs, options...)
-}
-
-// CatchFn captures and handles errors and panics that occur during the execution of the provided function.
-// The second parameter 'options' allows for passing error handlers and specific errors to be ignored.
-// Supported types for 'options' include:
-// - func(): a simple handler
-// - func(error): a handler for single errors
-// - func(...error): a handler for multiple errors
-// - func([]error): a handler for a slice of errors
-// - error: specific errors to be ignored.
-func CatchFn(f func() error, options ...any) {
-	errs := CollectErrors(f(), werr.PanicToError(recover()))
+func Catch(fn func() error, options ...any) {
+	errs := CollectErrors(fn(), werr.PanicToError(recover()))
 
 	// Process each option
 	processOptions(errs, options...)

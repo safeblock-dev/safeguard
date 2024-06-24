@@ -9,9 +9,7 @@ import (
 
 func main() {
 	var err error
-	defer safeguard.CatchFn(func() error {
-		return err
-	}, safeguard.ReportAndExit)
+	defer safeguard.Catch(func() error { return err }, safeguard.ReportAndExit)
 
 	err = errors.New("example error")
 	err = werr.Wrapf(err, "wrap error 1")
