@@ -25,7 +25,7 @@ func CollectErrors(errs ...error) []error {
 	return slices.DeleteFunc(errs, func(err error) bool { return err == nil })
 }
 
-// SkipErr creates a skipErr from a standard error.
-func SkipErr(err error) skipErr { //nolint: revive
-	return skipErr{error: err}
+// SkipErr creates a skipError from a standard error.
+func SkipErr(err error) skipError { //nolint: revive
+	return skipError{error: err}
 }

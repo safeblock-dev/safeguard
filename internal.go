@@ -6,8 +6,8 @@ import (
 	"reflect"
 )
 
-// skipErr is a specific error type used to indicate errors that should be skipped.
-type skipErr struct {
+// skipError is a specific error type used to indicate errors that should be skipped.
+type skipError struct {
 	error
 }
 
@@ -46,7 +46,7 @@ func processOptions(errs []error, options ...any) {
 			x(errs...)
 		case func([]error):
 			x(errs)
-		case skipErr:
+		case skipError:
 			errs = filterSkipErrors(errs, x.error)
 		case error:
 			errs = append(errs, x)

@@ -119,7 +119,7 @@ func TestProcessOptions(t *testing.T) {
 		require.Equal(t, errs, receivedErrors)
 	})
 
-	t.Run("with skipErr", func(t *testing.T) {
+	t.Run("with skipError", func(t *testing.T) {
 		t.Parallel()
 
 		skip := errors.New("skip this error")
