@@ -6,7 +6,7 @@ replace github.com/safeblock-dev/safeguard => ./..
 
 require (
 	github.com/safeblock-dev/safeguard v0.0.5
-	github.com/safeblock-dev/wr v0.0.11
+	github.com/safeblock-dev/wr v0.1.0
 )
 
-require github.com/safeblock-dev/werr v0.0.8
+require github.com/safeblock-dev/werr v0.1.0
