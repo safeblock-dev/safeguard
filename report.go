@@ -1,33 +1,26 @@
 package safeguard
 
 import (
-	"fmt"
+	"log"
+	"os"
 	"strings"
 )
 
-const (
-	colorReset = "\033[0m"  // ANSI escape code for resetting text color
-	colorRed   = "\033[31m" // ANSI escape code for red text
-	colorGreen = "\033[32m" // ANSI escape code for green text
-)
+var StdLogger = log.New(os.Stderr, "", log.LstdFlags) //nolint: gochecknoglobals // std logger.
 
 // Report prints error reports with color-coded formatting.
-// nolint: forbidigo
 func Report(errs ...error) {
-	const (
-		fTitle = colorRed + "[---------- FAIL[%d] ----------]" + colorReset
-		fEnd   = fTitle
-		sTitle = colorGreen + "\n---------- SUCCESS ----------" + colorGreen
-	)
 	if len(errs) == 0 {
-		fmt.Println(sTitle) // Print success message
+		//nolint: errcheck // don't need.
+		StdLogger.Writer().Write([]byte("\n"))
+		StdLogger.Println("no errors")
 	}
 
 	// Print each error with formatted title and exit with error code
-	for i, err := range errs {
-		fmt.Printf("\n%s\n\n\t%s\n\n%s\n",
-			fmt.Sprintf(fTitle, i), printStackTrace(err), fmt.Sprintf(fEnd, i),
-		)
+	for _, err := range errs {
+		//nolint: errcheck // don't need.
+		StdLogger.Writer().Write([]byte("\n"))
+		StdLogger.Println(strings.ReplaceAll(err.Error(), "\n", "\n\t"))
 	}
 }
 
@@ -38,9 +31,4 @@ func Report(errs ...error) {
 func ReportAndExit(errs ...error) {
 	Report(errs...)
 	Exit(errs...) // Exit with error code
-}
-
-// printStackTrace formats an error's stack trace for printing purposes.
-func printStackTrace(err error) string {
-	return strings.ReplaceAll(err.Error(), "\n", "\n\t")
 }

@@ -10,35 +10,30 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// nolint: paralleltest, tparallel
+// nolint: paralleltest
 func TestReport(t *testing.T) {
-	t.Parallel()
-
 	t.Run("no errors", func(t *testing.T) {
-		var buf bytes.Buffer
-		old := os.Stdout
-		defer func() { os.Stdout = old }()
-		r, w, _ := os.Pipe()
-		os.Stdout = w
-
+		buf := new(bytes.Buffer)
+		safeguard.StdLogger.SetOutput(buf)
 		safeguard.Report()
+		safeguard.StdLogger.SetOutput(os.Stderr)
 
-		require.NoError(t, w.Close())
-		_, _ = buf.ReadFrom(r)
-		require.Contains(t, buf.String(), "SUCCESS")
+		require.Contains(t, buf.String(), "no errors")
 	})
 
 	t.Run("with errors", func(t *testing.T) {
-		var buf bytes.Buffer
-		old := os.Stdout
-		defer func() { os.Stdout = old }()
-		r, w, _ := os.Pipe()
-		os.Stdout = w
+		errs := []error{
+			errors.New("test error 1"),
+			errors.New("test error 2"),
+		}
 
-		safeguard.Report(errors.New("test error 1"), errors.New("test error 2"))
+		buf := new(bytes.Buffer)
+		safeguard.StdLogger.SetOutput(buf)
+		safeguard.Report(errs...)
+		safeguard.StdLogger.SetOutput(os.Stderr)
 
-		require.NoError(t, w.Close())
-		_, _ = buf.ReadFrom(r)
-		require.Contains(t, buf.String(), "FAIL")
+		for _, err := range errs {
+			require.Contains(t, buf.String(), err.Error())
+		}
 	})
 }
