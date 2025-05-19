@@ -11,7 +11,7 @@ import (
 
 var StdLogger = log.New(os.Stderr, "", 0) //nolint: gochecknoglobals // std logger.
 
-const reportMessagePrefix = "Process finished with code "
+const reportMessagePrefix = "process finished with code "
 
 type report struct {
 	Message string   `json:"message"`

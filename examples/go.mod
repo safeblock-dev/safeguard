@@ -9,4 +9,4 @@ require (
 	github.com/safeblock-dev/wr v0.1.0
 )
 
-require github.com/safeblock-dev/werr v0.1.0
+require github.com/safeblock-dev/werr v0.2.1
