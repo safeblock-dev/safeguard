@@ -26,6 +26,6 @@ func CollectErrors(errs ...error) []error {
 }
 
 // SkipErr creates a skipError from a standard error.
-func SkipErr(err error) skipError { //nolint: revive
+func SkipErr(err error) error {
 	return skipError{error: err}
 }
